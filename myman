@@ -1,0 +1,55 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# vim:fenc=utf-8
+#
+# Copyright © 2022 nylander <j.a.a.nylander[at]gmail.com>
+#
+# Distributed under terms of the MIT license.
+
+"""
+Find and display files in your myman folder using TAB completion.
+"""
+
+import glob
+import os
+import platform
+import readline
+import subprocess
+from pathlib import Path
+
+manuals = []
+manual_files = {}
+
+myman_folder = './mymanfolder'
+
+mymanf = myman_folder + "/*"
+
+files = glob.glob(mymanf, recursive = False)
+for file in files:
+    filebase = Path(file).stem
+    manuals.append(filebase)
+    manual_files[filebase] = file
+
+def complete(text, state):
+    for cmd in manuals:
+        if cmd.startswith(text):
+            if not state:
+                return cmd
+            else:
+                state -= 1
+
+readline.set_completer_delims(' ')
+readline.parse_and_bind("tab: complete")
+readline.set_completer(complete)
+
+man = input('Enter manual name (use TAB completion): ')
+
+filepath = manual_files[man]
+
+if platform.system() == 'Darwin':
+    subprocess.call(('open', filepath))
+elif platform.system() == 'Windows':
+    os.startfile(filepath)
+else:
+    subprocess.call(('xdg-open', filepath))
+

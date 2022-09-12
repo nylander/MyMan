@@ -1,0 +1,133 @@
+Regular expressions
+A regular expression is contained in slashes, and matching occurs with the =~ operator. The following expression is true if the string the appears in variable $sentence.
+
+$sentence =~ /the/
+
+The RE is case sensitive, so if
+
+$sentence = "The quick brown fox";
+
+then the above match will be false. The operator !~ is used for spotting a non-match. In the above example
+
+$sentence !~ /the/
+
+is true because the string the does not appear in $sentence.
+
+The $_ special variable
+We could use a conditional as
+
+if ($sentence =~ /under/)
+{
+	print "We're talking about rugby\n";
+}
+
+which would print out a message if we had either of the following
+
+$sentence = "Up and under";
+$sentence = "Best winkles in Sunderland";
+
+But it's often much easier if we assign the sentence to the special variable $_ which is of course a scalar. If we do this then we can avoid using the match and non-match operators and the above can be written simply as
+
+if (/under/)
+{
+	print "We're talking about rugby\n";
+}
+
+The $_ variable is the default for many Perl operations and tends to be used very heavily.
+
+More on REs
+In an RE there are plenty of special characters, and it is these that both give them their power and make them appear very complicated. It's best to build up your use of REs slowly; their creation can be something of an art form.
+
+Here are some special RE characters and their meaning
+
+.	# Any single character except a newline
+^	# The beginning of the line or string
+$	# The end of the line or string
+*	# Zero or more of the last character
++	# One or more of the last character
+?	# Zero or one of the last character
+
+and here are some example matches. Remember that should be enclosed in /.../ slashes to be used.
+
+t.e	# t followed by anthing followed by e
+	# This will match the
+	#                 tre
+	#                 tle
+	# but not te
+	#         tale
+^f	# f at the beginning of a line
+^ftp	# ftp at the beginning of a line
+e$	# e at the end of a line
+tle$	# tle at the end of a line
+und*	# un followed by zero or more d characters
+	# This will match un
+	#                 und
+	#                 undd
+	#                 unddd (etc)
+.*	# Any string without a newline. This is because
+	# the . matches anything except a newline and
+	# the * means zero or more of these.
+^$	# A line with nothing in it.
+
+There are even more options. Square brackets are used to match any one of the characters inside them. Inside square brackets a - indicates "between" and a ^ at the beginning means "not":
+
+[qjk]		# Either q or j or k
+[^qjk]		# Neither q nor j nor k
+[a-z]		# Anything from a to z inclusive
+[^a-z]		# No lower case letters
+[a-zA-Z]	# Any letter
+[a-z]+		# Any non-zero sequence of lower case letters
+
+At this point you can probably skip to the end and do at least most of the exercise. The rest is mostly just for reference.
+
+A vertical bar | represents an "or" and parentheses (...) can be used to group things together:
+
+jelly|cream	# Either jelly or cream
+(eg|le)gs	# Either eggs or legs
+(da)+		# Either da or dada or dadada or...
+
+Here are some more special characters:
+
+\n		# A newline
+\t		# A tab
+\w		# Any alphanumeric (word) character.
+		# The same as [a-zA-Z0-9_]
+\W		# Any non-word character.
+		# The same as [^a-zA-Z0-9_]
+\d		# Any digit. The same as [0-9]
+\D		# Any non-digit. The same as [^0-9]
+\s		# Any whitespace character: space,
+		# tab, newline, etc
+\S		# Any non-whitespace character
+\b		# A word boundary, outside [] only
+\B		# No word boundary
+
+Clearly characters like $, |, [, ), \, / and so on are peculiar cases in regular expressions. If you want to match for one of those then you have to preceed it by a backslash. So:
+
+\|		# Vertical bar
+\[		# An open square bracket
+\)		# A closing parenthesis
+\*		# An asterisk
+\^		# A carat symbol
+\/		# A slash
+\\		# A backslash
+
+and so on.
+
+Some example REs
+As was mentioned earlier, it's probably best to build up your use of regular expressions slowly. Here are a few examples. Remember that to use them for matching they should be put in /.../ slashes
+
+[01]		# Either "0" or "1"
+\/0		# A division by zero: "/0"
+\/ 0		# A division by zero with a space: "/ 0"
+\/\s0		# A division by zero with a whitespace:
+		# "/ 0" where the space may be a tab etc.
+\/ *0		# A division by zero with possibly some
+		# spaces: "/0" or "/ 0" or "/  0" etc.
+\/\s*0		# A division by zero with possibly some
+		# whitespace.
+\/\s*0\.0*	# As the previous one, but with decimal
+		# point and maybe some 0s after it. Accepts
+		# "/0." and "/0.0" and "/0.00" etc and
+		# "/ 0." and "/  0.0" and "/   0.00" etc.
+
